@@ -1,49 +1,64 @@
 class Television:
-    # Class constants
     MIN_VOLUME = 0
     MAX_VOLUME = 2
     MIN_CHANNEL = 0
     MAX_CHANNEL = 3
 
     def __init__(self):
-        # Instance variables
-        self.__status = False  # TV is initially off
-        self.__muted = False   # TV is initially unmuted
-        self.__volume = Television.MIN_VOLUME  # Start at minimum volume
-        self.__channel = Television.MIN_CHANNEL  # Start at minimum channel
+        self.__status = False
+        self.__muted = False
+        self.__volume = Television.MIN_VOLUME
+        self.__channel = Television.MIN_CHANNEL
+        self.__volume_before_mute = self.__volume 
 
     def power(self):
-        # Toggle the TV's power status
         self.__status = not self.__status
 
     def mute(self):
-        if self.__status:  # Can only mute or unmute if TV is on
+        if self.__status:
             self.__muted = not self.__muted
-            if not self.__muted:
-                # If TV is unmuted, reset volume (as per the provided note)
+            if self.__muted:
+                self.__volume_before_mute = self.__volume
                 self.__volume = Television.MIN_VOLUME
+            else:
+                self.__volume = self.__volume_before_mute
 
     def channel_up(self):
-        if self.__status:  # Can only change channel if TV is on
-            self.__channel += 1
-            if self.__channel > Television.MAX_CHANNEL:
-                self.__channel = Television.MIN_CHANNEL
+        if self.__status:
+            nv = self.__channel + 1
+            ww = nv % (Television.MAX_CHANNEL + 1)
+            self.__channel = ww
 
     def channel_down(self):
-        if self.__status:  # Can only change channel if TV is on
-            self.__channel -= 1
-            if self.__channel < Television.MIN_CHANNEL:
-                self.__channel = Television.MAX_CHANNEL
+        if self.__status:
+            pp = self.__channel - 1
+            wr = pp % (Television.MAX_CHANNEL + 1)
+            self.__channel = wr
 
     def volume_up(self):
-        if self.__status and not self.__muted:  # Can only change volume if TV is on and not muted
+        if self.__status:
+            if self.__muted:
+                self.__muted = False
+                self.__volume = self.__volume_before_mute
             if self.__volume < Television.MAX_VOLUME:
-                self.__volume += 1
+                self.__volume = self.__volume + 1
 
     def volume_down(self):
-        if self.__status and not self.__muted:  # Can only change volume if TV is on and not muted
+        if self.__status:
+            if self.__muted:
+                self.__muted = False
+                self.__volume = self.__volume_before_mute
             if self.__volume > Television.MIN_VOLUME:
-                self.__volume -= 1
+                self.__volume = self.__volume - 1
 
     def __str__(self):
-        return f"Power = {'On' if self.__status else 'Off'}, Channel = {self.__channel}, Volume = {self.__volume}"
+        if self.__status:
+            ps = 'True'
+        else:
+            ps = 'False'
+        cs = self.__channel
+        vs = self.__volume
+        rs = f"Power = {ps}, Channel = {cs}, Volume = {vs}"
+        return rs
+
+
